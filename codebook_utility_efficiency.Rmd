@@ -16,58 +16,56 @@ library(kableExtra)
 df <- read_csv("Efficiency_Markets_Access.csv")
 ```
 \newpage
-# Overview of the Data
+# Overview, Sources, and Construction
 
-This codebook accompanies the dataset **`Efficiency_Markets_Access.csv`**, which merges utility‑level performance metrics with country‑level market structure, governance characteristics, and national electricity access rates. The dataset supports a benchmarking analysis of **49 electric utilities across 37 countries** and includes **21 cleaned and standardized variables**.
+This codebook accompanies the dataset Efficiency_Markets_Access.csv, which merges utility‑level performance metrics with country‑level electricity market structure, governance characteristics, and national electricity access rates. The dataset supports a benchmarking analysis of 49 electric utilities across 37 countries and includes 21 cleaned and standardized variables.
 
-The dataset brings together three complementary snapshots:
+**The dataset brings together three complementary snapshots:**
 
-1. **Utility Performance (2012–2022)**  
-   - Inputs (Employees; Total Assets) and outputs (Net Profit Margin; Customers; Transformed Distribution Losses) are **averaged over the 2012–2022 period** using the UPBEAT Utility Database. This decadal average smooths year‑to‑year volatility and captures each utility’s steady‐state performance.
+**1.	Utility Performance (2012–2022)**
 
-2. **Market Structure & Governance (2012)**  
-   - Country‑level market structure classification, presence of an independent regulator, independent power producer (IPP) establishment, transmission unbundling, and exit from vertical integration—are fixed at their **2012 values**, drawn from the World Bank’s electricity market reform dataset (covering 1989–2024). Aligning these to 2012 ensures consistency with the start of our performance window.
+Inputs (e.g., employees and assets) and outputs (e.g., net profit margin, customer count, distribution losses) are averaged across 2012–2022 using the UPBEAT Utility Database. This decadal average smooths year‑to‑year volatility and captures each utility’s steady‐state performance.
 
-3. **Electricity Access (2022)**  
-   - National household electrification rates for **2022** are taken from the World Development Indicators, anchoring each utility’s environment to the most recent year of access data.
+**2.	Market Structure & Governance (2012)**
 
-All data‑processing steps—from cleaning and merging to reshaping and DEA score calculation—are fully reproducible via the replication script **`Efficiency_scores-market-access_dataset_creation.R`**.
+Characteristics like vertical integration, independent regulation, and IPP presence are fixed at their 2012 values, taken from the World Bank electricity market reform dataset. This aligns with the beginning of the performance window.
 
-# Sources and Data Wrangling
+**3.	Electricity Access (2022)**
 
-**Data Sources:**
+Country-level access data are drawn from the World Development Indicators, anchoring each utility to the most recent year of access data.
+
+All data-processing steps—from cleaning and merging to reshaping and calculating DEA scores—are fully reproducible via the replication script Efficiency_scores-market-access_dataset_creation.R.
+
+**Primary Data Sources:**
 
 - [UPBEAT Utility Database](https://utilityperformance.energydata.info/about/intro): Utility performance and financial indicators.
+
 - [World Bank Market Structure Dataset](https://datacatalog.worldbank.org/search/dataset/0065245): Country-level electricity market structures and governance characteristics.
+
 - [World Bank - Access to Electricity (WDI)](https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS): National electricity access rates.
 
 
-**Wrangling Steps:**
-
-1. **Calculate decade‑long averages** of each input/output indicator (2012–2022).
-2. **Run DEA** (input‑oriented CCR model) to compute efficiency scores.
-3. **Merge** DEA scores with **2012** market structure and governance data.
-4. **Join** 2022 electricity access rates.
-5. **Standardize** variable names, data types, and factor levels; document NAs with explicit codes. 
-
-# Data Envelopment Analysis (DEA) Methodology
-
-The **Efficiency Score** variable in this dataset was constructed using **Data Envelopment Analysis (DEA)**, a non-parametric technique for benchmarking the relative efficiency of utilities in transforming inputs into outputs. This project applies an **input-oriented CCR model** (assuming constant returns to scale), which estimates how much a utility could reduce its inputs while maintaining its output levels.
-
-The input and output variables were sourced from the **UPBEAT utility performance database**, a World Bank initiative that standardizes multi-year utility data across financial, operational, and technical indicators. For each utility, input and output values were averaged across all available years in the dataset to create a representative profile.
-
-**Inputs:**
-- Employees
-- Total Assets
-
-**Outputs:**
-- Net Profit Margin
-- Customers
-- Transformed Distribution Losses (1 - Distribution Losses)
-
-The model was implemented in R using the `Benchmarking` package. Utilities with missing input/output values were excluded.
-
 # Variable Descriptions and Summaries
+
+## Efficiency Score
+- **Type:** Numeric
+- **Description:** A Data Envelopment Analysis (DEA) efficiency score ranging from 0 to 1, where 1 indicates a fully efficient utility. Scores were computed using an input-oriented CCR model based on selected input (Employees, Total Assets) and output (Net Profit Margin, Customers, Transformed Distribution Losses) variables.
+- **Methodology:** The score was computed using an input-oriented CCR DEA model (constant returns to scale), implemented via the Benchmarking package in R. Inputs included Employees and Total Assets; outputs included Net Profit Margin, Customers, and Transformed Distribution Losses. Input/output values were averaged across 2012–2022. Utilities with missing data were excluded from the model.
+- **Source:** Constructed from UPBEAT database.
+```{r}
+df %>%
+  summarize(
+    Min = min(`Efficiency Score`, na.rm = TRUE),
+    Q1 = quantile(`Efficiency Score`, 0.25, na.rm = TRUE),
+    Median = median(`Efficiency Score`, na.rm = TRUE),
+    Mean = mean(`Efficiency Score`, na.rm = TRUE),
+    Q3 = quantile(`Efficiency Score`, 0.75, na.rm = TRUE),
+    Max = max(`Efficiency Score`, na.rm = TRUE),
+    NAs = sum(is.na(`Efficiency Score`))
+  ) %>%
+  kable(caption = "Summary - Efficiency Score", align = "c") %>%
+  kable_styling(full_width = FALSE)
+```
 
 ## Utility Long Name
 - **Type:** Character
@@ -295,25 +293,6 @@ df %>%
   kable_styling(full_width = FALSE)
 ```
 
-## Efficiency Score
-- **Type:** Numeric
-- **Description:** A Data Envelopment Analysis (DEA) efficiency score ranging from 0 to 1, where 1 indicates a fully efficient utility. Scores were computed using an input-oriented CCR model based on selected input (Employees, Total Assets) and output (Net Profit Margin, Customers, Transformed Distribution Losses) variables.
-- **Source:** UPBEAT (DEA computed)
-```{r}
-df %>%
-  summarize(
-    Min = min(`Efficiency Score`, na.rm = TRUE),
-    Q1 = quantile(`Efficiency Score`, 0.25, na.rm = TRUE),
-    Median = median(`Efficiency Score`, na.rm = TRUE),
-    Mean = mean(`Efficiency Score`, na.rm = TRUE),
-    Q3 = quantile(`Efficiency Score`, 0.75, na.rm = TRUE),
-    Max = max(`Efficiency Score`, na.rm = TRUE),
-    NAs = sum(is.na(`Efficiency Score`))
-  ) %>%
-  kable(caption = "Summary - Efficiency Score", align = "c") %>%
-  kable_styling(full_width = FALSE)
-```
-
 ## Market Structure  
 - **Type:** Factor  
 - **Description:** Categorical variable representing the utility's national power market structure, based on a simplified classification derived from World Bank market reform data. The three categories are:
@@ -360,7 +339,6 @@ table(df$`Private IPP Established`, useNA = "ifany") %>%
   kable_styling(full_width = FALSE)
 ```
 
-\newpage
 ## Unbundling
 - **Type:** Logical
 - **Description:** TRUE if transmission is unbundled.
@@ -375,6 +353,7 @@ table(df$Unbundling, useNA = "ifany") %>%
   kable_styling(full_width = FALSE)
 ```
 
+\newpage
 ## Out of VIU
 - **Type:** Logical
 - **Description:** TRUE if the utility is no longer vertically integrated.
