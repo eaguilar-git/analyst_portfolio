@@ -17,7 +17,7 @@ It includes three key components:
 | [`index.html`](https://eaguilar-git.github.io/analyst_portfolio/#4)                  | Final presentation slides (hosted via GitHub Pages) |
 | [`codebook_utility_efficiency.pdf`](https://github.com/eaguilar-git/analyst_portfolio/blob/9809c2c38723049b01f31c95abe489165defd469/codebook_utility_efficiency.pdf) | Codebook report on utility efficiency and market structure |
 | [`exemplary_code_chunk.R/`](https://github.com/eaguilar-git/analyst_portfolio/blob/9809c2c38723049b01f31c95abe489165defd469/exemplary_code_chunk.R)        | Self-contained DEA analysis code and explanation |
-| [`Data_Analyst_Resume_Edgar_Aguilar.pdf`](./analyst_resume.pdf)  | Resume highlighting data analysis and visualization skills |
+| [`Data_Analyst_Resume_Edgar_Aguilar.pdf`](https://github.com/eaguilar-git/analyst_portfolio/blob/72b84e5634f6376ea0271391b8159ea77707fa9a/Data_Analyst_Resume_Edgar_Aguilar.pdf)  | Resume highlighting data analysis and visualization skills |
 
 ---
 
