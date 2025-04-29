@@ -14,9 +14,9 @@ It includes three key components:
 
 | File/Folder                                    | Description |
 |-----------------------------------------------|-------------|
-| [`index.html`](./index.html)                  | Final presentation slides (hosted via GitHub Pages) |
+| [`index.html`](https://eaguilar-git.github.io/analyst_portfolio/#4)                  | Final presentation slides (hosted via GitHub Pages) |
 | [`codebook_utility_efficiency.pdf`](./codebook_utility_efficiency.pdf) | Codebook report on utility efficiency and market structure |
-| [`exemplary_code/`](./exemplary_code/)        | Self-contained DEA analysis code and explanation |
+| [`exemplary_code/`](.exemplary_code_chunk.R)        | Self-contained DEA analysis code and explanation |
 | [`analyst_resume.pdf`](./analyst_resume.pdf)  | Resume highlighting data analysis and visualization skills |
 
 ---
@@ -30,8 +30,6 @@ This slide deck presents an independent analysis project completed for the cours
 - Clean, compelling **data visualizations**
 - Clear framing of a data-driven question and interpretation of results
 
-[View the slides](./index.html)
-
 ---
 
 ### Codebook: Utility Efficiency & Market Structure
@@ -44,18 +42,15 @@ The codebook includes:
 - Key **descriptive statistics** and **visual summaries**
 - Clean, reproducible layout for communicating technical findings
 
-[`codebook_utility_efficiency.pdf`](./codebook_utility_efficiency.pdf)
 
 ---
 
-### 💻 Exemplary Code Chunk
+### Exemplary Code Chunk
 
 This script demonstrates:
 - Full pipeline for **Data Envelopment Analysis (DEA)** using the `Benchmarking` package
 - Data cleaning, reshaping, and merging with policy and access indicators
 - Clean, modular code with comments for replication
-
-[`exemplary_code/`](./exemplary_code/)
 
 The code is also explained in a structured README inside the folder.
 
@@ -67,8 +62,6 @@ A one-page resume emphasizing:
 - Proficiency with R, RMarkdown, and data visualization tools
 - Experience in data analysis for policy, energy, and international development
 - Quantitative research and communication skills
-
-[`analyst_resume.pdf`](./analyst_resume.pdf)
 
 ---
 
