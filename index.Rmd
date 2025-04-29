@@ -1,0 +1,241 @@
+---
+title: "Does cost recovery lead to asset growth for electric utilities?"
+author: "Edgar Aguilar"
+institute: "American University"
+date: "ea9339a@american.edu"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [robot, robot-fonts]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      ratio: "16:9"
+---  
+
+```{r setup, include=FALSE}
+# Global chunk options
+knitr::opts_chunk$set(
+  echo      = FALSE,
+  message   = FALSE,
+  warning   = FALSE,
+  comment   = NA,
+  dev       = "svglite",
+  fig.align = "center",
+  fig.width = 7,
+  fig.height= 5,
+  out.width = "80%"
+)
+
+# Load required packages
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(lfe)
+library(modelsummary)
+library(scales)
+
+# Load and prepare the dataset
+data_file <- "slides_utilities_data.xlsx"
+if (!file.exists(data_file)) {
+  stop("Data file 'slides_utilities_data.xlsx' not found.")
+}
+data_slides <- read_xlsx(data_file) %>%
+  rename(IncomeGroup = `Income Group`) %>%
+  mutate(
+    `Average Cost Recovery`    = as.numeric(`Average Cost Recovery`),
+    `Total Assets Growth Rate` = as.numeric(`Total Assets Growth Rate`),
+    ACR_percent   = `Average Cost Recovery` * 100,
+    TAGR_percent  = `Total Assets Growth Rate` * 100
+  )
+```
+
+# Overview
+- Electric utilities are essential to expanding and maintaining reliable electricity access.
+
+- Asset growth reflects infrastructure expansion and improved service capacity.
+
+- This analysis tests whether utilities that recover their costs are better positioned to grow their assets.
+
+- I begin with descriptive statistics, then test the cost recovery–growth link using regression.
+	
+---
+# Description of the dataset
+- 185 utilities across 93 countries.
+
+- Majority are from lower- and upper-middle income countries.
+
+- Two indicators are central to this analysis:
+    - Average Cost Recovery (ACR): 2012–2022
+    - Total Asset Growth Rate (TAGR): Annualized over 2012–2022
+	
+---
+# Distribution of cost recovery
+- Wide variation in cost recovery.
+
+- 116 utilities fall below the 100% benchmark (shown in red dashed line).
+
+- 69 utilities exceed 100% recovery.
+```{r cost-recovery-histogram, fig.width=7, fig.height=3, echo=FALSE}
+ggplot(data_slides, aes(x = ACR_percent)) +
+  geom_histogram(binwidth = 5, fill = "steelblue", color = "white", boundary = 0) +
+  geom_vline(xintercept = 100, linetype = "dashed", color = "red", size = 1) +
+  scale_x_continuous(
+    breaks = seq(0, 200, 25),
+    limits = c(0, 200),
+    labels = percent_format(scale = 1)
+  ) +
+  scale_y_continuous(
+    expand = expansion(mult = c(0, 0.05)) # no gap at bottom, tiny gap at top
+  ) +
+  labs(
+    title = "Histogram of Average Cost Recovery",
+    x     = "Cost Recovery (%)",
+    y     = "Count of Utilities"
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.x = element_line(color = "black"),   # bottom line only
+    axis.line.y = element_blank(),                 # no vertical axis line
+    plot.title  = element_text(hjust = 0.5, face = "bold"),
+    axis.title.x = element_text(face = "bold"),
+    axis.title.y = element_text(face = "bold"),
+    axis.text.x  = element_text(face = "bold"),
+    axis.text.y  = element_text(face = "bold")
+  )
+```
+
+---
+# Asset growth vs. cost recovery
+- The scatterplot shows a weak and slightly negative relationship between cost recovery and asset growth.
+
+- Regression analysis confirms that cost recovery is not a statistically significant predictor of asset growth (p = 0.22).
+
+- This suggests that higher cost recovery alone is not sufficient to guarantee infrastructure expansion.
+.pull-left[
+```{r scatter-plot, fig.width=10, fig.height=7, echo=FALSE}
+ggplot(data_slides, aes(x = ACR_percent, y = TAGR_percent)) +
+  geom_point(alpha = 0.7, size = 3.5) +  # larger points
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "black", size = 1.2) +
+  scale_x_continuous(
+    limits = c(0, 200),
+    breaks = seq(0, 200, 25),
+    labels = scales::percent_format(scale = 1)
+  ) +
+  scale_y_continuous(
+    limits = c(0, 40),
+    breaks = seq(0, 40, 10),
+    labels = scales::percent_format(scale = 1),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    title = "Asset Growth vs. Cost Recovery",
+    x     = "Cost Recovery (%)",
+    y     = "Asset Growth Rate (%)"
+  ) +
+  theme_minimal(base_size = 20) +  # even bigger base size
+  theme(
+    panel.grid.major   = element_blank(),
+    panel.grid.minor   = element_blank(),
+    axis.line.x        = element_line(color = "black"),
+    axis.line.y        = element_blank(),
+    plot.title         = element_text(hjust = 0.5, face = "bold", size = 26),
+    axis.title.x       = element_text(face = "bold", size = 22),
+    axis.title.y       = element_text(face = "bold", size = 22),
+    axis.text.x        = element_text(face = "bold", size = 20),
+    axis.text.y        = element_text(face = "bold", size = 20),
+    legend.title       = element_text(face = "bold", size = 20),
+    legend.text        = element_text(size = 18),
+    legend.position    = "top"
+  )
+```
+]
+.pull-right[
+```{r regression-table, echo=FALSE}
+# Run the regression
+model <- lm(`Total Assets Growth Rate` ~ `Average Cost Recovery`, data = data_slides)
+
+# Extract regression coefficients and rename columns
+reg_table <- as.data.frame(summary(model)$coefficients)
+colnames(reg_table) <- c("Estimate", "Std. Error", "t-value", "p-value")
+
+# Print the table using kableExtra with a chosen font size
+library(knitr)
+library(kableExtra)
+kable(reg_table, caption = "Regression Results: Total Assets Growth Rate on Average Cost Recovery", align = "c") %>%
+  kable_styling(full_width = FALSE, font_size = 10)
+```
+]
+
+---
+# Cost Recovery by Income Group
+.pull-left[
+- Clear gradient observed: cost recovery is generally lower in low-income countries and higher in upper-middle and high-income countries.
+
+- Variability in cost recovery is largest among lower-middle income utilities.
+
+- These patterns suggest that broader economic and institutional factors, linked to country income levels, influence utilities’ financial performance and investment capacity.
+
+]
+
+.pull-right[
+```{r boxplot-income, fig.width=7, fig.height=5, echo=FALSE}
+# First, reorder IncomeGroup as a factor
+data_slides <- data_slides %>%
+  mutate(IncomeGroup = factor(IncomeGroup, levels = c(
+    "Low income", "Lower middle income", "Upper middle income", "High income"
+  )))
+
+# Now plot
+ggplot(data_slides, aes(x = IncomeGroup, y = ACR_percent)) +
+  geom_boxplot(fill = "lightblue", outlier.alpha = 0.5, outlier.size = 1.5) +
+  
+  # Add mean and median with manual color legend
+  stat_summary(
+    aes(color = "Mean"), fun = mean, geom = "point", shape = 19, size = 2
+  ) +
+  stat_summary(
+    aes(color = "Median"), fun = median, geom = "point", shape = 17, size = 2
+  ) +
+  
+  scale_y_continuous(
+    limits = c(0, 200),
+    labels = percent_format(scale = 1),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  
+  # Define color legend manually
+  scale_color_manual(
+    name = "Statistics",
+    values = c("Mean" = "red", "Median" = "blue")
+  ) +
+  
+  labs(
+    title = "Cost Recovery by Income Group",
+    x     = "Income Group",
+    y     = "Cost Recovery (%)"
+  ) +
+  
+  theme_minimal(base_size = 11) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.x = element_line(color = "black"),
+    axis.line.y = element_blank(),
+    axis.text.x = element_text(face = "bold", size = 10, angle = 45, hjust = 1),
+    axis.text.y = element_text(face = "bold", size = 10),
+    axis.title.x = element_text(face = "bold", size = 12),
+    axis.title.y = element_text(face = "bold", size = 12),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text  = element_text(size = 10),
+    legend.position = "top"
+  )
+```
+]
+---
+
+# Thank you!
+
