@@ -52,8 +52,6 @@ This script demonstrates:
 - Data cleaning, reshaping, and merging with policy and access indicators
 - Clean, modular code with comments for replication
 
-The code is also explained in a structured README inside the folder.
-
 ---
 
 ### Analyst Resume
