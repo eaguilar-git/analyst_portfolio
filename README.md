@@ -66,7 +66,7 @@ A one-page resume emphasizing:
 ## ✉️ Contact
 
 Edgar Aguilar  
-📧 *Contact info available upon request*  
+📧 *Email:* aguilared.96@gmail.com  
 🌐 [eaguilar-git.github.io](https://github.com/eaguilar-git)
 
 ---
