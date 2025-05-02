@@ -2,7 +2,7 @@
 
 This repository presents my final Analyst Portfolio for the course **SIS-750: Data Analysis and Visualization**. The portfolio highlights my technical skills in **data wrangling**, **statistical analysis**, **visualization**, and **reproducible programming** using R.
 
-It includes three key components:
+It includes four key components:
 1. A final **slide deck** from an independent data analysis project
 2. A **codebook** and **data workflow** from a project on utility efficiency and market structure
 3. A self-contained, well-commented **exemplary code chunk**
